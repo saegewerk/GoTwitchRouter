@@ -6,10 +6,10 @@ import (
 	"fmt"
 	irc "github.com/fluffle/goirc/client"
 	_ "github.com/lib/pq"
-	"github.com/saegewerk/BotZtwitch/pkg/config"
-	DB "github.com/saegewerk/BotZtwitch/pkg/db"
-	"github.com/saegewerk/BotZtwitch/pkg/twitchchat"
-	"github.com/saegewerk/BotZtwitch/pkg/twitchrouter"
+	"github.com/saegewerk/GoTwitchRouter/pkg/config"
+	DB "github.com/saegewerk/GoTwitchRouter/pkg/db"
+	"github.com/saegewerk/GoTwitchRouter/pkg/twitchchat"
+	"github.com/saegewerk/GoTwitchRouter/pkg/twitchrouter"
 	"google.golang.org/grpc"
 	"io"
 	"log"
@@ -18,19 +18,15 @@ import (
 	"time"
 )
 
-
-
 var (
 	twitchConfig *twitchchat.Configuration
 	twitch       *twitchchat.Chat
 )
 
-func initConfiguration(nickname,channel string) {
+func initConfiguration(nickname, channel string) {
 	oauth := "oauth:" + os.Getenv("TWITCH")
 	twitchConfig = twitchchat.NewConfiguration(nickname, oauth, channel)
 }
-
-
 
 type server struct {
 	twitchrouter.UnimplementedTwitchRouterServer
@@ -104,7 +100,7 @@ func main() {
 		println(err.Error())
 		return
 	}
-	initConfiguration(c.Twitch.Nickname,c.Twitch.Channel)
+	initConfiguration(c.Twitch.Nickname, c.Twitch.Channel)
 	db, err := sql.Open("postgres", c.SprintfDBConfig())
 	if err != nil {
 		println(err.Error())
@@ -194,7 +190,7 @@ func (s *server) runWithCallbacks(twitch *twitchchat.Chat, queries *DB.Queries) 
 				}
 			default:
 			}
-			log.Printf("Event: %s, Nick: %s, MsgId: %s, Msg: %s\n", event, message.Nick, msgID,message.Args[1])
+			log.Printf("Event: %s, Nick: %s, MsgId: %s, Msg: %s\n", event, message.Nick, msgID, message.Args[1])
 			if message.Args[1][0] == '!' {
 
 				if len(message.Args[1]) == 1 {
@@ -226,7 +222,7 @@ func (s *server) runWithCallbacks(twitch *twitchchat.Chat, queries *DB.Queries) 
 						default:
 						}
 						//twitch.SendMessage(*res.Msg)
-					}else if "join" == app.CmdRegister.Cmd && event=="join"{
+					} else if "join" == app.CmdRegister.Cmd && event == "join" {
 						select {
 						case *app.Queue <- twitchrouter.CmdMessage{
 							Cmd:   app.CmdRegister.Cmd,
@@ -236,7 +232,7 @@ func (s *server) runWithCallbacks(twitch *twitchchat.Chat, queries *DB.Queries) 
 						}:
 						default:
 						}
-					}else if "part" == app.CmdRegister.Cmd && event=="part"{
+					} else if "part" == app.CmdRegister.Cmd && event == "part" {
 						select {
 						case *app.Queue <- twitchrouter.CmdMessage{
 							Cmd:   app.CmdRegister.Cmd,
@@ -246,7 +242,7 @@ func (s *server) runWithCallbacks(twitch *twitchchat.Chat, queries *DB.Queries) 
 						}:
 						default:
 						}
-					}else if "usernotice" == app.CmdRegister.Cmd && event=="usernotice"{
+					} else if "usernotice" == app.CmdRegister.Cmd && event == "usernotice" {
 						select {
 						case *app.Queue <- twitchrouter.CmdMessage{
 							Cmd:   app.CmdRegister.Cmd,
