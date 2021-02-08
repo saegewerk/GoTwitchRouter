@@ -1,0 +1,20 @@
+package twitchrouter;
+
+service TwitchRouter {
+  rpc Message (stream MessageRequest) returns (stream MessageResponse){}
+}
+
+message MessageRequest {
+  required string command = 1;
+  required  string help = 2;
+  required int32 accessLevel = 3;
+  optional  string msg = 4;
+  optional  string uuid = 5;
+}
+
+message MessageResponse {
+  required  string msg = 1;
+  required  string command = 2;
+  required  string uuid = 3;
+  required  string msgid = 4;
+}
